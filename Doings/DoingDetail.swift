@@ -8,8 +8,10 @@ struct DoingDetail: View {
 
     var body: some View {
         ZStack {
-            List(doing.subDoings) { subDoing in
-                Text(subDoing.title)
+            List{
+                ForEach(doing.subDoings) { subDoing in
+                    Text(subDoing.title)
+                }.onDelete(perform: deleteSubDoing)
             }
             .navigationTitle(doing.title)
 
@@ -38,6 +40,22 @@ struct DoingDetail: View {
                         }
                     }
                 }
+            }
+        }
+    }
+    // Function to delete a sub-doing
+    private func deleteSubDoing(at offsets: IndexSet) {
+        var decodedUserDefaultDoings = try? JSONDecoder().decode([String: [Doing]].self, from: userDefaultDoings)
+
+        if var currentDescription = decodedUserDefaultDoings?["doings"]?.first(where: { $0.id == doing.id })?.subDoings {
+            // Remove the sub-doings at the specified offsets
+            currentDescription.remove(atOffsets: offsets)
+
+            if let index = decodedUserDefaultDoings?["doings"]?.firstIndex(where: { $0.id == doing.id }) {
+                decodedUserDefaultDoings?["doings"]?[index].subDoings = currentDescription
+            }
+            if let data = try? JSONEncoder().encode(decodedUserDefaultDoings) {
+                self.userDefaultDoings = data
             }
         }
     }

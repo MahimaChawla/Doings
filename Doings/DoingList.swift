@@ -16,7 +16,7 @@ struct DoingList: View {
                         } label: {
                             DoingRow(doing: doing)
                         }
-                    }
+                    }.onDelete(perform: deleteDoing)
                     .navigationTitle("All Doings")
                 }
 
@@ -44,6 +44,22 @@ struct DoingList: View {
                         }
                     }
                 }
+            }
+        }
+    }
+    
+    // Function to delete a "doing" element
+    private func deleteDoing(at offsets: IndexSet) {
+        var decodedUserDefaultDoings = try? JSONDecoder().decode([String: [Doing]].self, from: userDefaultDoings)
+
+        if var doings = decodedUserDefaultDoings?["doings"] {
+            // Remove the "doing" elements at the specified offsets
+            doings.remove(atOffsets: offsets)
+
+            decodedUserDefaultDoings?["doings"] = doings
+
+            if let data = try? JSONEncoder().encode(decodedUserDefaultDoings) {
+                self.userDefaultDoings = data
             }
         }
     }
