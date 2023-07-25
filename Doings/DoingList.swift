@@ -19,13 +19,18 @@ struct DoingList: View {
                     }.onDelete(perform: deleteDoing)
                     .navigationTitle("All Doings")
                 }
-
-                Button {
-                    alertPresented = true
-                } label: {
-                    ZStack {
-                        Image(systemName: "circle")
-                        Image(systemName: "plus")
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Button {
+                            alertPresented = true
+                        } label: {
+                            ZStack {
+                                Image(systemName: "circle").font(.system(size: 30))
+                                Image(systemName: "plus").font(.system(size: 30))
+                            }
+                        }
                     }
                 }
                 .alert("What are you doing?", isPresented: $alertPresented) {
@@ -44,6 +49,7 @@ struct DoingList: View {
                         }
                     }
                 }
+                .padding()
             }
         }
     }

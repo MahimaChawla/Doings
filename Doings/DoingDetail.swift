@@ -36,10 +36,12 @@ struct DoingDetail: View {
                                             })
                                             .textFieldStyle(RoundedBorderTextFieldStyle())
                                         } else {
-                                            Text(subDoing.description)
+                                            Text(subDoing.description.isEmpty ? "Add Description" : subDoing.description)
+                                                .font(.system(size: 14))
+                                                .foregroundColor(.gray) 
                                                 .onTapGesture {
                                                     startEditingDescription(for: subDoing)
-                                }
+                                                }
                         }
                         
                     }
@@ -47,31 +49,37 @@ struct DoingDetail: View {
             }
             .navigationTitle(doing.title)
             .navigationBarItems(trailing: Button("Save", action: saveAllData))
-
-            Button {
-                alertPresented = true
-            } label: {
-                ZStack {
-                    Image(systemName: "circle")
-                    Image(systemName: "plus")
-                }
-            }
-            .alert("Take a new step", isPresented: $alertPresented) {
-                TextField("", text: $subDoingText)
-                Button("Cancel", role: .cancel) {}
-                Button("Save", role: .none) {
-                    var decodedUserDefaultDoings = try? JSONDecoder().decode([String: [Doing]].self, from: userDefaultDoings)
-
-                    if var currentTitle = decodedUserDefaultDoings?["doings"]?.first(where: { $0.id == doing.id })?.subDoings {
-                        currentTitle.append(Doing(id: UUID(), title: subDoingText, subDoings: [], description: ""))
-
-                        if let index = decodedUserDefaultDoings?["doings"]?.firstIndex(where: { $0.id == doing.id }) {
-                            decodedUserDefaultDoings?["doings"]?[index].subDoings = currentTitle
-                        }
-                        if let data = try? JSONEncoder().encode(decodedUserDefaultDoings) {
-                            self.userDefaultDoings = data
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    Button {
+                        alertPresented = true
+                    } label: {
+                        ZStack {
+                            Image(systemName: "circle").font(.system(size: 30))
+                            Image(systemName: "plus").font(.system(size: 30))
                         }
                     }
+                    .alert("Take a new step", isPresented: $alertPresented) {
+                        TextField("", text: $subDoingText)
+                        Button("Cancel", role: .cancel) {}
+                        Button("Save", role: .none) {
+                            var decodedUserDefaultDoings = try? JSONDecoder().decode([String: [Doing]].self, from: userDefaultDoings)
+                            
+                            if var currentTitle = decodedUserDefaultDoings?["doings"]?.first(where: { $0.id == doing.id })?.subDoings {
+                                currentTitle.append(Doing(id: UUID(), title: subDoingText, subDoings: [], description: ""))
+                                
+                                if let index = decodedUserDefaultDoings?["doings"]?.firstIndex(where: { $0.id == doing.id }) {
+                                    decodedUserDefaultDoings?["doings"]?[index].subDoings = currentTitle
+                                }
+                                if let data = try? JSONEncoder().encode(decodedUserDefaultDoings) {
+                                    self.userDefaultDoings = data
+                                }
+                            }
+                        }
+                    }
+                    .padding()
                 }
             }
         }
@@ -188,9 +196,6 @@ struct DoingDetail: View {
         }
     }
     
-    
-    
-
 }
 
 struct DoingDetail_Previews: PreviewProvider {
