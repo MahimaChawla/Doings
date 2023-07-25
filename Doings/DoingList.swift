@@ -33,12 +33,12 @@ struct DoingList: View {
                     Button("Cancel", role: .cancel) {}
                     Button("Save", role: .none) {
                         if var val = decodedUserDefaultDoings?["doings"] {
-                            val.append(Doing(id: UUID(), title: newDoingTitle, subDoings: []))
+                            val.append(Doing(id: UUID(), title: newDoingTitle, subDoings: [], description: ""))
                             let data = ["doings": val]
                             guard let userDefaultDoings = try? JSONEncoder().encode(data) else { return }
                             self.userDefaultDoings = userDefaultDoings
                         } else {
-                            let data = ["doings": [Doing(id: UUID(), title: newDoingTitle, subDoings: [])]]
+                            let data = ["doings": [Doing(id: UUID(), title: newDoingTitle, subDoings: [], description: "")]]
                             guard let userDefaultDoings = try? JSONEncoder().encode(data) else { return }
                             self.userDefaultDoings = userDefaultDoings
                         }

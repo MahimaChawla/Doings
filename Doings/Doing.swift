@@ -12,5 +12,6 @@ struct Doing: Identifiable, Codable {
     var id = UUID()
     var title: String
     var subDoings: [Doing] = []
+    var description: String
 }
 
